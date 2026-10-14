@@ -1,23 +1,17 @@
-import {
-    Scene,
-    Raycaster,
-    Vector2,
-    PlaneGeometry,
-    MeshBasicMaterial,
-    Mesh,
-    CanvasTexture,
-    NearestFilter,
-    RepeatWrapping,
-} from 'three';
+import { Scene, Raycaster, Vector2, PlaneGeometry, Mesh, ShaderMaterial } from 'three';
 import LightsManager from './LightsManager';
 import CameraManager from './CameraManager';
 import Sphere from './Sphere';
+import { backgroundFragmentShader, backgroundVertexShader } from './BackgroundShader';
+import { gsap } from 'gsap';
 
 const GRID_SIZE = 21;
 
 export default class SceneGlobal extends Scene {
     constructor(options = {}) {
         super();
+
+        this.json = null;
 
         this.renderer = options.renderer;
         this.debugger = options.debugger;
@@ -28,11 +22,11 @@ export default class SceneGlobal extends Scene {
         this.debugFolder = this.createDebugFolder();
         this.cameraManager = this.createCameraManager();
         this.lightsManager = this.createLightsManager();
-        this.floorTexture = this.createFloorTexture();
         this.floor = this.createFloor();
         this.radius = 1;
 
         this.setupEventListeners();
+        this.loadJson();
     }
 
     get camera() {
@@ -62,41 +56,27 @@ export default class SceneGlobal extends Scene {
     createSphere() {
         const sphere = new Sphere();
 
-        sphere.position.y = -0.5;
-
         this.add(sphere);
 
         return sphere;
     }
 
-    createFloorTexture() {
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-
-        canvas.width = 2;
-        canvas.height = 2;
-
-        context.fillStyle = '#F1F1F1';
-        context.fillRect(0, 0, 1, 1);
-        context.fillRect(1, 1, 1, 1);
-
-        context.fillStyle = '#BFBFBF';
-        context.fillRect(1, 0, 1, 1);
-        context.fillRect(0, 1, 1, 1);
-
-        const canvasTexture = new CanvasTexture(canvas);
-        canvasTexture.minFilter = NearestFilter;
-        canvasTexture.magFilter = NearestFilter;
-        canvasTexture.wrapS = RepeatWrapping;
-        canvasTexture.wrapT = RepeatWrapping;
-        canvasTexture.repeat.set(GRID_SIZE / 2, GRID_SIZE / 2);
-
-        return canvasTexture;
-    }
-
     createFloor() {
         const geometry = new PlaneGeometry(1, 1, 1);
-        const material = new MeshBasicMaterial({ map: this.floorTexture });
+        const material = new ShaderMaterial({
+            uniforms: {
+                iTime: { value: 0 },
+                iResolution: {
+                    value: new Vector2(window.innerWidth, window.innerHeight),
+                },
+            },
+            vertexShader: backgroundVertexShader,
+            fragmentShader: backgroundFragmentShader,
+            depthTest: false,
+            depthWrite: false,
+        });
+
+        this.floorMaterial = material;
         const mesh = new Mesh(geometry, material);
 
         mesh.scale.set(GRID_SIZE, GRID_SIZE, GRID_SIZE);
@@ -122,6 +102,7 @@ export default class SceneGlobal extends Scene {
         this.renderHeight = height;
 
         this.cameraManager.resize(width, height);
+        this.floorMaterial.uniforms.iResolution.value.set(width, height);
     }
 
     resizeHandler(event) {
@@ -132,6 +113,53 @@ export default class SceneGlobal extends Scene {
         window.addEventListener('pointerdown', this.pointerdownHandler.bind(this));
         window.addEventListener('pointerup', this.pointerupHandler.bind(this));
         window.addEventListener('mousemove', this.mousemoveHandler.bind(this));
+        window.addEventListener('keydown', this.keydownHandler.bind(this));
+    }
+
+    keydownHandler(e) {
+        if (e.code === 'Space') {
+            console.log('Space key pressed');
+            this.startAnimation();
+        }
+    }
+
+    loadJson() {
+        fetch('/paterns.json')
+            .then((response) => response.json())
+            .then((data) => {
+                this.json = data;
+            });
+    }
+
+    startAnimation() {
+        if (!this.json) return;
+
+        const breath = this.json[0].breath;
+        const expire = this.json[0].expire;
+
+        const animationState = {
+            radius: this.sphere.radius,
+        };
+
+        const timeline = gsap.timeline({ repeat: 6, repeatDelay: 0.5 });
+
+        timeline
+            .to(animationState, {
+                radius: 2,
+                duration: breath,
+                ease: 'power1.inOut',
+                onUpdate: () => {
+                    this.sphere.setRadius(animationState.radius);
+                },
+            })
+            .to(animationState, {
+                radius: 1,
+                duration: expire,
+                ease: 'power1.inOut',
+                onUpdate: () => {
+                    this.sphere.setRadius(animationState.radius);
+                },
+            });
     }
 
     pointerupHandler(e) {
@@ -162,24 +190,29 @@ export default class SceneGlobal extends Scene {
     }
 
     update() {
-        if (this.isPointerDown) {
-            const elapsedTime = performance.now() - this.pointerDownTime;
-            this.radius = Math.min(elapsedTime / 1000, 5);
-            console.log(this.radius, elapsedTime);
+        const time = performance.now() / 1000;
 
-            this.sphere.setRadius(this.radius / 2);
-        }
+        this.sphere.update(time);
+        this.floorMaterial.uniforms.iTime.value = time;
 
-        // a faire -> get le radius actuel et partir de la pour revenir a 1
+        // if (this.isPointerDown) {
+        //     const elapsedTime = performance.now() - this.pointerDownTime;
+        //     this.radius = Math.min(elapsedTime / 1000, 5);
+        //     console.log(this.radius, elapsedTime);
 
-        if (!this.isPointerDown) {
-            const elapsedTime = performance.now() - this.pointerDownTime;
+        //     this.sphere.setRadius(this.radius / 2);
+        // }
 
-            this.radius = Math.min(1, this.radius + elapsedTime / 1000);
-            console.log(this.radius);
+        // // a faire -> get le radius actuel et partir de la pour revenir a 1
 
-            this.sphere.setRadius(this.radius / 2);
-        }
+        // if (!this.isPointerDown) {
+        //     const elapsedTime = performance.now() - this.pointerDownTime;
+
+        //     this.radius = Math.min(1, this.radius + elapsedTime / 1000);
+        //     console.log(this.radius);
+
+        //     this.sphere.setRadius(this.radius / 2);
+        // }
     }
 
     /**

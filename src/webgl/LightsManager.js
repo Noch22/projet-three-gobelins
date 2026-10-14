@@ -39,6 +39,7 @@ export default class LightsManager {
         this.scene.add(directional.controls.getHelper());
 
         this.scene.add(directional);
+        this.scene.add(directional.target);
         this.scene.add(directional.helper);
 
         if (this.settings.helper) directional.controls.attach(directional);

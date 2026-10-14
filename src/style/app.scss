@@ -2,4 +2,35 @@ html,
 body {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+#home-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: grid;
+    place-content: center;
+    gap: 1rem;
+    text-align: center;
+    opacity: 1;
+    visibility: visible;
+    transition:
+        opacity 700ms ease,
+        visibility 700ms ease;
+}
+
+body.is-experience-active #home-screen {
+    opacity: 0;
+    visibility: hidden;
+}
+
+#webgl {
+    opacity: 0;
+    transition: opacity 1000ms ease;
+}
+
+body.is-experience-active #webgl {
+    opacity: 1;
 }

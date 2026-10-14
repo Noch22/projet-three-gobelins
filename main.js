@@ -1,8 +1,13 @@
-// Style
 import '@/style/app.scss';
-
 import WebglApp from '@/webgl';
 
-console.log('Hello World');
+const homeScreen = document.querySelector('#home-screen');
+const startButton = document.querySelector('#start-button');
 
-const webglApp = new WebglApp();
+let webglApp = null;
+
+startButton.addEventListener('click', () => {
+    document.body.classList.add('is-experience-active');
+
+    webglApp = new WebglApp();
+});
