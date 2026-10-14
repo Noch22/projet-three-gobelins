@@ -18,3 +18,9 @@ pnpm dev
 ```bash
 pnpm build
 ```
+
+## Coding Style
+
+For code formatting on save make sure to install vscode extension [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+
+You can change the prettier config with your coding style in `/.prettierrc`

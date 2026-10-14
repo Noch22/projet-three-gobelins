@@ -1,7 +1,10 @@
-// Vendor
-import glsl from "vite-plugin-glsl";
-import { defineConfig } from "vite";
+import glsl from 'vite-plugin-glsl';
+import { defineConfig } from 'vite';
+import path from 'path';
 
 export default defineConfig({
-  plugins: [glsl()],
+    plugins: [glsl()],
+    resolve: {
+        alias: [{ find: '@', replacement: path.resolve(import.meta.dirname, './src') }],
+    },
 });

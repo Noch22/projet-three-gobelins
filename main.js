@@ -1,8 +1,8 @@
 // Style
-import "./src/style/app.scss";
+import '@/style/app.scss';
 
-import WebglApp from "./src/webgl";
+import WebglApp from '@/webgl';
 
-console.log("Hello World");
+console.log('Hello World');
 
 const webglApp = new WebglApp();
