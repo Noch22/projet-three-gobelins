@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Respiration cohérente",
+        "breath": 5,
+        "expire": 5,
+        "brake": 0
+    },
+    {
+        "name": "Respiration apaisante",
+        "breath": 4,
+        "expire": 6,
+        "brake": 0
+    }
+]
