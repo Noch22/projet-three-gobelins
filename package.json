@@ -1,0 +1,22 @@
+{
+  "name": "gobelins-threejs-2026-starter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "sass-embedded": "^1.105.1",
+    "vite": "^8.3.4",
+    "vite-plugin-glsl": "^1.6.2"
+  },
+  "dependencies": {
+    "three": "^0.186.1"
+  }
+}
