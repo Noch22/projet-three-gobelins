@@ -107,7 +107,7 @@ export default class SceneGlobal extends Scene {
         return mesh;
     }
 
-    raycast() {
+    raycast(triggerHaptic = false) {
         this.raycaster.setFromCamera(this.mousePosition, this.camera);
         const intersects = this.raycaster.intersectObject(this.sphere.hitMesh, false);
 
@@ -116,7 +116,9 @@ export default class SceneGlobal extends Scene {
         this.isPointerDown = true;
         console.log(this.isMobile, this.timeline.isActive());
 
-        this.haptics.trigger(defaultPatterns.success);
+        if (triggerHaptic) {
+            this.haptics.trigger(defaultPatterns.success);
+        }
 
         if (!this.timeline.isActive() && this.isMobile) {
             this.startAnimation();
@@ -140,6 +142,7 @@ export default class SceneGlobal extends Scene {
     setupEventListeners() {
         window.addEventListener('pointerdown', this.pointerdownHandler.bind(this));
         window.addEventListener('pointerup', this.pointerupHandler.bind(this));
+        window.addEventListener('click', this.clickHandler.bind(this));
         window.addEventListener('mousemove', this.mousemoveHandler.bind(this));
         window.addEventListener('keydown', this.keydownHandler.bind(this));
     }
@@ -297,6 +300,13 @@ export default class SceneGlobal extends Scene {
         };
 
         this.raycast();
+    }
+
+    clickHandler(e) {
+        if (e.target !== this.renderer.domElement) return;
+
+        this.updatePointerPosition(e);
+        this.raycast(true);
     }
 
     mousemoveHandler(e) {
