@@ -103,9 +103,9 @@ export default class SceneGlobal extends Scene {
         if (intersects.length === 0) return;
         console.log('intersects', intersects);
         this.isPointerDown = true;
-        console.log(this.isMobile);
+        console.log(this.isMobile, this.timeline.isActive());
         if (!this.timeline.isActive() && this.isMobile) {
-            // this.startAnimation();
+            this.startAnimation();
             this.buttonPressed = true;
             this.onButtonPressed?.(this.buttonPressed);
         }
