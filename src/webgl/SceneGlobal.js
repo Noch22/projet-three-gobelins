@@ -25,6 +25,9 @@ export default class SceneGlobal extends Scene {
         this.raycaster = new Raycaster();
         this.mousePosition = new Vector2();
         this.timeline = gsap.timeline({ repeat: 5, repeatDelay: 0 });
+        this.haptics = new WebHaptics();
+        this.hapticInterval = null;
+        this.hapticTimeout = null;
 
         this.debugFolder = this.createDebugFolder();
         this.cameraManager = this.createCameraManager();
@@ -104,6 +107,11 @@ export default class SceneGlobal extends Scene {
         console.log('intersects', intersects);
         this.isPointerDown = true;
         console.log(this.isMobile, this.timeline.isActive());
+
+        if (this.isMobile) {
+            this.haptics.trigger(defaultPatterns.success);
+        }
+
         if (!this.timeline.isActive() && this.isMobile) {
             this.startAnimation();
             this.buttonPressed = true;
@@ -149,12 +157,30 @@ export default class SceneGlobal extends Scene {
         this.mode = mode;
     }
 
+    stopHapticPhase() {
+        clearInterval(this.hapticInterval);
+        clearTimeout(this.hapticTimeout);
+        this.hapticInterval = null;
+        this.hapticTimeout = null;
+    }
+
+    startHapticPhase(duration) {
+        this.stopHapticPhase();
+
+        const triggerPulse = () => {
+            this.haptics.trigger(defaultPatterns.medium);
+        };
+
+        triggerPulse();
+        this.hapticInterval = setInterval(triggerPulse, 900);
+        this.hapticTimeout = setTimeout(() => this.stopHapticPhase(), duration * 1000);
+    }
+
     startAnimation() {
         this.animationStartTime = performance.now();
         if (!this.json) return;
         console.log('Starting animation with mode:', this.mode);
 
-        const haptics = new WebHaptics();
         const mode = this.mode || this.json[1];
         const breath = mode.breath;
         const expire = mode.expire;
@@ -199,7 +225,7 @@ export default class SceneGlobal extends Scene {
                     updateProgressText('Inspiration', breathRaw);
                     this.animationStartTime = performance.now();
                     breathSound.play('customStart');
-                    haptics.trigger(defaultPatterns.buzz, { duration: breathRaw * 1000 });
+                    this.isMobile && this.startHapticPhase(breathRaw);
                 },
                 onUpdate: () => {
                     updateProgressText('Inspiration', breathRaw);
@@ -228,7 +254,7 @@ export default class SceneGlobal extends Scene {
                     animationState.elapsed = 0;
                     updateProgressText('Expiration', expireRaw);
                     this.animationStartTime = performance.now();
-                    haptics.trigger(defaultPatterns.success, { duration: 100 });
+                    this.isMobile && this.startHapticPhase(expireRaw);
                     expireSound.play('customStart');
                 },
             })
