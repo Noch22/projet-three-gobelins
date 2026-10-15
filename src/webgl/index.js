@@ -11,16 +11,18 @@ export default class WebGLApp {
 
         this.renderer = this.createRenderer();
         this.debugger = this.createDebugger();
-        this.sceneGlobal = this.createSceneGlobal();
+        this.sceneGlobal = this.createSceneGlobal(options);
         this.resize();
 
         this.setupEventListeners();
     }
 
-    createSceneGlobal() {
+    createSceneGlobal(options) {
         const scene = new SceneGlobal({
             renderer: this.renderer,
             debugger: this.debugger,
+            isMobile: options.isMobile,
+            onButtonPressed: options.onButtonPressed,
         });
 
         return scene;
@@ -28,7 +30,7 @@ export default class WebGLApp {
 
     createRenderer() {
         const renderer = new WebGLRenderer({
-            canvas: document.querySelector('canvas'),
+            canvas: document.querySelector('#webgl-canvas'),
         });
 
         renderer.setClearColor(0xffffff);

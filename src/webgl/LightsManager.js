@@ -1,4 +1,4 @@
-import { AmbientLight, DirectionalLight, DirectionalLightHelper } from 'three';
+import { AmbientLight, DirectionalLight, DirectionalLightHelper, LightShadow } from 'three';
 import { TransformControls } from 'three/examples/jsm/Addons.js';
 
 export default class LightsManager {
@@ -30,6 +30,7 @@ export default class LightsManager {
 
     createDirectional() {
         const directional = new DirectionalLight(0x18e1ff, 2);
+
         directional.position.set(10, 10, 5);
         directional.target.position.set(0, 0, 0);
 

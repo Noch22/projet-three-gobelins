@@ -1,18 +1,37 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Gobelins Threejs 2026 Starter</title>
+        <title>Relax - expérience interactive</title>
     </head>
     <body>
-        <main id="home-screen">
-            <h1>Mon expérience 3D</h1>
-            <p>Bienvenue dans mon projet.</p>
-
-            <button id="start-button">Entrer dans l'expérience</button>
+        <div id="container">
+            <main id="home-screen">
+                <div>
+                    <section class="hero-copy">
+                        <h1>RELAX</h1>
+                        <p>Je vous sent au combien stressé(e)... Profitez d'un petit temps de relaxation 🧘</p>
+                        <button id="start-button">Commencer l'expérience</button>
+                    </section>
+                    <section id="room-panel" aria-live="polite">
+                        <span class="panel-label">Votre espace</span>
+                        <p id="room-status"></p>
+                        <select id="mode-select"></select>
+                        <canvas id="qr-code"></canvas>
+                    </section>
+                </div>
+            </main>
+        </div>
+        <main id="mobile-screen">
+            <h1>RELAX</h1>
+            <p>Prêt(e) à passer un moment de détente infini ?</p>
+            <p>Pour profiter de l'expérience, veuillez utiliser un ordinateur.</p>
         </main>
-        <canvas></canvas>
+        <div id="progress-bar"></div>
+        <div id="progress-bar-bg"></div>
+        <p id="progress-text"></p>
+        <canvas id="webgl-canvas"></canvas>
         <script type="module" src="./main.js" defer></script>
     </body>
 </html>

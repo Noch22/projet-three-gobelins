@@ -4,6 +4,8 @@ import CameraManager from './CameraManager';
 import Sphere from './Sphere';
 import { backgroundFragmentShader, backgroundVertexShader } from './BackgroundShader';
 import { gsap } from 'gsap';
+import { WebHaptics, defaultPatterns } from 'web-haptics';
+import { Howl, Howler } from 'howler';
 
 const GRID_SIZE = 21;
 
@@ -12,12 +14,17 @@ export default class SceneGlobal extends Scene {
         super();
 
         this.json = null;
+        this.mode = null;
+        this.buttonPressed = false;
+        this.isMobile = options.isMobile;
+        this.onButtonPressed = options.onButtonPressed;
 
         this.renderer = options.renderer;
         this.debugger = options.debugger;
         this.sphere = this.createSphere();
         this.raycaster = new Raycaster();
         this.mousePosition = new Vector2();
+        this.timeline = gsap.timeline({ repeat: 5, repeatDelay: 0 });
 
         this.debugFolder = this.createDebugFolder();
         this.cameraManager = this.createCameraManager();
@@ -26,7 +33,7 @@ export default class SceneGlobal extends Scene {
         this.radius = 1;
 
         this.setupEventListeners();
-        this.loadJson();
+        this.jsonPromise = this.loadJson();
     }
 
     get camera() {
@@ -94,7 +101,14 @@ export default class SceneGlobal extends Scene {
         const intersects = this.raycaster.intersectObject(this.sphere.hitMesh, false);
 
         if (intersects.length === 0) return;
+        console.log('intersects', intersects);
         this.isPointerDown = true;
+        console.log(this.isMobile);
+        if (!this.timeline.isActive() && this.isMobile) {
+            // this.startAnimation();
+            this.buttonPressed = true;
+            this.onButtonPressed?.(this.buttonPressed);
+        }
     }
 
     resize(width, height) {
@@ -118,53 +132,122 @@ export default class SceneGlobal extends Scene {
 
     keydownHandler(e) {
         if (e.code === 'Space') {
-            console.log('Space key pressed');
-            this.startAnimation();
+            !this.timeline.isActive() && this.startAnimation();
         }
     }
 
     loadJson() {
-        fetch('/paterns.json')
+        return fetch('/paterns.json')
             .then((response) => response.json())
             .then((data) => {
                 this.json = data;
+                return data;
             });
     }
 
-    startAnimation() {
-        if (!this.json) return;
+    setMode(mode) {
+        this.mode = mode;
+    }
 
-        const breath = this.json[0].breath;
-        const expire = this.json[0].expire;
+    startAnimation() {
+        this.animationStartTime = performance.now();
+        if (!this.json) return;
+        console.log('Starting animation with mode:', this.mode);
+
+        const haptics = new WebHaptics();
+        const mode = this.mode || this.json[1];
+        const breath = mode.breath;
+        const expire = mode.expire;
+        const breathRaw = mode.breath;
+        const expireRaw = mode.expire;
+        const breathSound = new Howl({
+            src: ['/breath.m4a'],
+            sprite: {
+                customStart: [1000, breath * 1000],
+            },
+        });
+        const expireSound = new Howl({
+            src: ['/expire.m4a'],
+            sprite: {
+                customStart: [2500, expire * 1000],
+            },
+            volume: 2,
+        });
 
         const animationState = {
             radius: this.sphere.radius,
+            elapsed: 0,
         };
 
-        const timeline = gsap.timeline({ repeat: 6, repeatDelay: 0.5 });
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
 
-        timeline
+        const updateProgressText = (step, duration) => {
+            const time = performance.now() - this.animationStartTime;
+
+            progressText.innerText = `${step} : ${Math.ceil(time / 1000)}s / ${duration}s`;
+        };
+
+        this.timeline
             .to(animationState, {
                 radius: 2,
+                elapsed: breath,
                 duration: breath,
                 ease: 'power1.inOut',
+                onStart: () => {
+                    animationState.elapsed = 0;
+                    updateProgressText('Inspiration', breathRaw);
+                    this.animationStartTime = performance.now();
+                    breathSound.play('customStart');
+                    haptics.trigger(defaultPatterns.buzz, { duration: breathRaw * 1000 });
+                },
                 onUpdate: () => {
+                    updateProgressText('Inspiration', breathRaw);
                     this.sphere.setRadius(animationState.radius);
                 },
             })
+            .to(
+                progressBar,
+                {
+                    width: '100%',
+                    duration: breath,
+                    ease: 'none',
+                },
+                '<',
+            )
             .to(animationState, {
                 radius: 1,
+                elapsed: expire,
                 duration: expire,
                 ease: 'power1.inOut',
                 onUpdate: () => {
+                    updateProgressText('Expiration', expireRaw);
                     this.sphere.setRadius(animationState.radius);
                 },
-            });
+                onStart: () => {
+                    animationState.elapsed = 0;
+                    updateProgressText('Expiration', expireRaw);
+                    this.animationStartTime = performance.now();
+                    haptics.trigger(defaultPatterns.success, { duration: 100 });
+                    expireSound.play('customStart');
+                },
+            })
+            .to(
+                progressBar,
+                {
+                    width: '0%',
+                    duration: expire,
+                    ease: 'none',
+                },
+                '<',
+            );
     }
 
     pointerupHandler(e) {
         console.log('pointerup', e);
         this.isPointerDown = false;
+        this.buttonPressed = false;
+        this.onButtonPressed?.(this.buttonPressed);
         const pointerUpTime = performance.now();
         this.pointerDuration = pointerUpTime - this.pointerDownTime;
         this.sphere.setRadius(1);
@@ -194,25 +277,6 @@ export default class SceneGlobal extends Scene {
 
         this.sphere.update(time);
         this.floorMaterial.uniforms.iTime.value = time;
-
-        // if (this.isPointerDown) {
-        //     const elapsedTime = performance.now() - this.pointerDownTime;
-        //     this.radius = Math.min(elapsedTime / 1000, 5);
-        //     console.log(this.radius, elapsedTime);
-
-        //     this.sphere.setRadius(this.radius / 2);
-        // }
-
-        // // a faire -> get le radius actuel et partir de la pour revenir a 1
-
-        // if (!this.isPointerDown) {
-        //     const elapsedTime = performance.now() - this.pointerDownTime;
-
-        //     this.radius = Math.min(1, this.radius + elapsedTime / 1000);
-        //     console.log(this.radius);
-
-        //     this.sphere.setRadius(this.radius / 2);
-        // }
     }
 
     /**

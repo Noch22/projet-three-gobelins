@@ -13,14 +13,14 @@ export default class Sphere extends Object3D {
         super();
 
         this.radius = options.radius || 1;
-        this.mesh = this.createSphereGeometry(1, 0.5, true);
+        this.mesh = this.createSphereGeometry(1, 0.5, false);
         this.mesh2 = this.createSphereGeometry(0.8, 1, false);
         this.hitMesh = this.createHitMesh();
     }
 
     createSphereGeometry(radius = 1, opacity = 1, wireframe = false) {
         const geometry = new SphereGeometry(radius, 32, 32);
-        const mesh = new Mesh(geometry, this.buildTwistMaterial(0.1, 0.5, wireframe));
+        const mesh = new Mesh(geometry, this.buildTwistMaterial(0.1, opacity, wireframe));
 
         this.add(mesh);
 
