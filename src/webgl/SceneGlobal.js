@@ -29,6 +29,12 @@ export default class SceneGlobal extends Scene {
         this.hapticInterval = null;
         this.hapticTimeout = null;
 
+        console.log('[haptics]', {
+            supported: WebHaptics.isSupported,
+            secureContext: window.isSecureContext,
+            vibrate: typeof navigator.vibrate === 'function',
+        });
+
         this.debugFolder = this.createDebugFolder();
         this.cameraManager = this.createCameraManager();
         this.lightsManager = this.createLightsManager();
@@ -108,7 +114,7 @@ export default class SceneGlobal extends Scene {
         this.isPointerDown = true;
         console.log(this.isMobile, this.timeline.isActive());
 
-        if (this.isMobile) {
+        if (WebHaptics.isSupported) {
             this.haptics.trigger(defaultPatterns.success);
         }
 
@@ -225,7 +231,7 @@ export default class SceneGlobal extends Scene {
                     updateProgressText('Inspiration', breathRaw);
                     this.animationStartTime = performance.now();
                     breathSound.play('customStart');
-                    this.isMobile && this.startHapticPhase(breathRaw);
+                    WebHaptics.isSupported && this.startHapticPhase(breathRaw);
                 },
                 onUpdate: () => {
                     updateProgressText('Inspiration', breathRaw);
@@ -254,7 +260,7 @@ export default class SceneGlobal extends Scene {
                     animationState.elapsed = 0;
                     updateProgressText('Expiration', expireRaw);
                     this.animationStartTime = performance.now();
-                    this.isMobile && this.startHapticPhase(expireRaw);
+                    WebHaptics.isSupported && this.startHapticPhase(expireRaw);
                     expireSound.play('customStart');
                 },
             })

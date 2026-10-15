@@ -4,6 +4,11 @@ import { io } from 'socket.io-client';
 import QRCode from 'qrcode';
 import { Howl, Howler } from 'howler';
 import { WebHaptics } from 'web-haptics';
+import eruda from 'eruda';
+
+if (new URLSearchParams(window.location.search).has('debug')) {
+    eruda.init();
+}
 
 class App {
     constructor() {
