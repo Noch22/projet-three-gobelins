@@ -3,7 +3,6 @@ import WebglApp from '@/webgl';
 import { io } from 'socket.io-client';
 import QRCode from 'qrcode';
 import { Howl, Howler } from 'howler';
-import { WebHaptics } from 'web-haptics';
 import eruda from 'eruda';
 
 if (new URLSearchParams(window.location.search).has('debug')) {
@@ -113,11 +112,6 @@ class App {
         await QRCode.toCanvas(this.qrCode, roomUrl.toString(), { width: 240, margin: 2 });
 
         this.roomStatus.textContent = `Room ${roomCode} - scannez le QR code avec votre mobile`;
-    }
-
-    handleButtonMobileClick() {
-        const haptics = new WebHaptics();
-        this.startButtonMobile.addEventListener('click', () => haptics.trigger());
     }
 }
 

@@ -4,7 +4,7 @@ import CameraManager from './CameraManager';
 import Sphere from './Sphere';
 import { backgroundFragmentShader, backgroundVertexShader } from './BackgroundShader';
 import { gsap } from 'gsap';
-import { WebHaptics, defaultPatterns } from 'web-haptics';
+import { triggerHaptic } from 'tactus';
 import { Howl, Howler } from 'howler';
 
 const GRID_SIZE = 21;
@@ -25,14 +25,11 @@ export default class SceneGlobal extends Scene {
         this.raycaster = new Raycaster();
         this.mousePosition = new Vector2();
         this.timeline = gsap.timeline({ repeat: 5, repeatDelay: 0 });
-        this.haptics = new WebHaptics({
-            showSwitch: true,
-        });
         this.hapticInterval = null;
         this.hapticTimeout = null;
 
         console.log('[haptics]', {
-            supported: WebHaptics.isSupported,
+            ios: /iPad|iPhone|iPod/.test(navigator.userAgent),
             secureContext: window.isSecureContext,
             vibrate: typeof navigator.vibrate === 'function',
         });
@@ -117,7 +114,7 @@ export default class SceneGlobal extends Scene {
         console.log(this.isMobile, this.timeline.isActive());
 
         if (triggerHaptic) {
-            this.haptics.trigger(defaultPatterns.success);
+            triggerHaptic(40);
         }
 
         if (!this.timeline.isActive() && this.isMobile) {
@@ -177,7 +174,7 @@ export default class SceneGlobal extends Scene {
         this.stopHapticPhase();
 
         const triggerPulse = () => {
-            this.haptics.trigger(defaultPatterns.medium);
+            triggerHaptic(25);
         };
 
         triggerPulse();

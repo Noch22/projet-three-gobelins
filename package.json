@@ -25,9 +25,9 @@
         "qrcode": "^1.5.4",
         "socket.io": "^4.8.4",
         "socket.io-client": "^4.8.4",
+        "tactus": "^0.0.3",
         "three": "^0.186.1",
         "tweakpane": "^4.0.5",
-        "vite-plugin-mkcert": "^2.1.0",
-        "web-haptics": "^0.0.6"
+        "vite-plugin-mkcert": "^2.1.0"
     }
 }
