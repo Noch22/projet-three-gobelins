@@ -3,6 +3,7 @@ import WebglApp from '@/webgl';
 import { io } from 'socket.io-client';
 import QRCode from 'qrcode';
 import { Howl, Howler } from 'howler';
+import { WebHaptics } from 'web-haptics';
 
 class App {
     constructor() {
@@ -20,6 +21,7 @@ class App {
 
         this.modeSelect = document.querySelector('#mode-select');
         this.startButton = document.querySelector('#start-button');
+        this.startButtonMobile = document.querySelector('#start-button-mobile');
         this.qrCode = document.querySelector('#qr-code');
         this.roomStatus = document.querySelector('#room-status');
 
@@ -106,6 +108,11 @@ class App {
         await QRCode.toCanvas(this.qrCode, roomUrl.toString(), { width: 240, margin: 2 });
 
         this.roomStatus.textContent = `Room ${roomCode} - scannez le QR code avec votre mobile`;
+    }
+
+    handleButtonMobileClick() {
+        const haptics = new WebHaptics();
+        this.startButtonMobile.addEventListener('click', () => haptics.trigger());
     }
 }
 
