@@ -25,7 +25,9 @@ export default class SceneGlobal extends Scene {
         this.raycaster = new Raycaster();
         this.mousePosition = new Vector2();
         this.timeline = gsap.timeline({ repeat: 5, repeatDelay: 0 });
-        this.haptics = new WebHaptics();
+        this.haptics = new WebHaptics({
+            showSwitch: true,
+        });
         this.hapticInterval = null;
         this.hapticTimeout = null;
 
@@ -114,9 +116,7 @@ export default class SceneGlobal extends Scene {
         this.isPointerDown = true;
         console.log(this.isMobile, this.timeline.isActive());
 
-        if (WebHaptics.isSupported) {
-            this.haptics.trigger(defaultPatterns.success);
-        }
+        this.haptics.trigger(defaultPatterns.success);
 
         if (!this.timeline.isActive() && this.isMobile) {
             this.startAnimation();
@@ -231,7 +231,7 @@ export default class SceneGlobal extends Scene {
                     updateProgressText('Inspiration', breathRaw);
                     this.animationStartTime = performance.now();
                     breathSound.play('customStart');
-                    WebHaptics.isSupported && this.startHapticPhase(breathRaw);
+                    this.startHapticPhase(breathRaw);
                 },
                 onUpdate: () => {
                     updateProgressText('Inspiration', breathRaw);
@@ -260,7 +260,7 @@ export default class SceneGlobal extends Scene {
                     animationState.elapsed = 0;
                     updateProgressText('Expiration', expireRaw);
                     this.animationStartTime = performance.now();
-                    WebHaptics.isSupported && this.startHapticPhase(expireRaw);
+                    this.startHapticPhase(expireRaw);
                     expireSound.play('customStart');
                 },
             })
