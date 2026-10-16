@@ -4,7 +4,6 @@ import { io } from 'socket.io-client';
 import QRCode from 'qrcode';
 import { Howl, Howler } from 'howler';
 import eruda from 'eruda';
-// import { hapticTrigger } from 'ios-haptics';
 import { WebHaptics, defaultPatterns } from 'web-haptics';
 
 if (new URLSearchParams(window.location.search).has('debug')) {
@@ -34,6 +33,8 @@ class App {
         this.startButtonMobile = document.querySelector('#start-button-mobile');
         this.qrCode = document.querySelector('#qr-code');
         this.roomStatus = document.querySelector('#room-status');
+        this.modeDescription = document.querySelector('#mode-description');
+        // document.getElementById('mobile-panel').style.display = 'flex';
 
         this.setupModes();
         this.setupEventListeners();
@@ -45,8 +46,16 @@ class App {
         this.webglApp.sceneGlobal.jsonPromise.then((modes) => {
             this.modes = modes;
             this.modeSelect.innerHTML = modes
-                .map((mode, index) => `<option value="${index}">${mode.name}</option>`)
+                .map(
+                    (
+                        mode,
+                        index,
+                    ) => `<option value="${index}"><div> <svg aria-hidden='true' viewBox='0 0 24 24' width='16' height='16'>
+            <circle cx='12' cy='12' r='8' fill='${mode.color}' />
+         </svg> <span>${mode.name}</span></div></option>`,
+                )
                 .join('');
+            this.modeSelect.insertAdjacentHTML('afterbegin', '<button><selectedcontent></selectedcontent></button>');
             this.selectMode(0);
         });
     }
@@ -73,6 +82,7 @@ class App {
 
         this.modeSelect.addEventListener('change', (event) => {
             this.selectMode(Number(event.target.value));
+            this.modeDescription.textContent = `Inspirez pendant ${this.modes?.[Number(event.target.value)]?.breath || ''} secondes. Expirez pendant ${this.modes?.[Number(event.target.value)]?.expire || ''} secondes. ${this.modes?.[Number(event.target.value)]?.brake ? `Faites une pause pendant ${this.modes?.[Number(event.target.value)]?.brake || ''} secondes.` : ''}`;
         });
 
         this.socket.on('connect', () => this.handleSocketConnection());
@@ -84,6 +94,8 @@ class App {
             this.roomStatus.textContent = message;
             document.body.classList.add('is-experience-active', 'has-room');
             document.getElementById('mobile-screen').style.display = 'none';
+
+            // a remettre si on veut que le panel mobile s'affiche
             this.isMobile && (document.getElementById('mobile-panel').style.display = 'flex');
         });
         this.socket.on('START_ANIMATION', () => {
@@ -114,6 +126,7 @@ class App {
     handleAnimationComplete() {
         if (this.currentRoom) {
             this.socket.emit('ANIMATION_COMPLETE');
+            document.body.classList.remove('is-experience-active', 'has-room');
         }
     }
 

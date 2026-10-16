@@ -10,13 +10,18 @@
             <div>
                 <section class="hero-copy">
                     <h1>RELAX</h1>
-                    <p>Je vous sent au combien stressé(e)... Profitez d'un petit temps de relaxation 🧘</p>
-                    <button id="start-button">Commencer l'expérience</button>
+                    <p>Ouh là là, vous paraissez stressé(e)... Profitez d'un petit temps de relaxation 🧘</p>
+                    <div class="hero-panel">
+                        <span class="panel-label"> Choisissez votre mode de respiration </span>
+                        <select id="mode-select"></select>
+                        <p id="mode-description">Inspirez pendant 5 secondes. Expirez pendant 5 secondes.</p>
+                        <button class="button-33" id="start-button">Commencer l'expérience</button>
+                    </div>
                 </section>
                 <section id="room-panel" aria-live="polite">
                     <span class="panel-label">Votre espace</span>
                     <p id="room-status"></p>
-                    <select id="mode-select"></select>
+
                     <canvas id="qr-code"></canvas>
                 </section>
             </div>
@@ -27,10 +32,13 @@
             <p>Pour profiter de l'expérience, veuillez utiliser un ordinateur.</p>
         </main>
         <section id="mobile-panel">
-            <p>
-                Cliquez sur le bouton ci-dessous pour commencer l'expérience. Profitez de la vibration pour vous
-                détendre. Regardez votre écran d'ordinateur pour profiter de l'expérience.
-            </p>
+            <div>
+                <h1>RELAX</h1>
+                <p>
+                    Cliquez sur le bouton ci-dessous pour commencer l'expérience. Regardez votre écran d'ordinateur pour
+                    profiter de l'expérience.
+                </p>
+            </div>
             <button id="start-button-mobile">Commencer l'expérience</button>
         </section>
         <div id="progress-bar"></div>

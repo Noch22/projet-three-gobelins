@@ -25,22 +25,23 @@ export default class SceneGlobal extends Scene {
         this.sphere = this.createSphere();
         this.raycaster = new Raycaster();
         this.mousePosition = new Vector2();
+        this.progressText = document.getElementById('progress-text');
+        this.jsonPromise = this.loadJson();
         this.timeline = gsap.timeline({
-            repeat: 0,
-            repeatDelay: 0,
+            repeat: 2,
             onComplete: () => {
                 console.log('Timeline has ended!');
                 this.onAnimationComplete?.();
+                this.progressText.innerText = '';
             },
         });
-        this.debugFolder = this.createDebugFolder();
+        // this.debugFolder = this.createDebugFolder();
         this.cameraManager = this.createCameraManager();
         this.lightsManager = this.createLightsManager();
         this.floor = this.createFloor();
         this.radius = 1;
 
         this.setupEventListeners();
-        this.jsonPromise = this.loadJson();
     }
 
     get camera() {
@@ -135,13 +136,6 @@ export default class SceneGlobal extends Scene {
         window.addEventListener('pointerdown', this.pointerdownHandler.bind(this));
         window.addEventListener('pointerup', this.pointerupHandler.bind(this));
         window.addEventListener('mousemove', this.mousemoveHandler.bind(this));
-        window.addEventListener('keydown', this.keydownHandler.bind(this));
-    }
-
-    keydownHandler(e) {
-        if (e.code === 'Space') {
-            !this.timeline.isActive() && this.startAnimation();
-        }
     }
 
     loadJson() {
@@ -162,11 +156,13 @@ export default class SceneGlobal extends Scene {
         if (!this.json) return;
         console.log('Starting animation with mode:', this.mode);
 
-        const mode = this.mode || this.json[1];
-        const breath = mode.breath;
-        const expire = mode.expire;
-        const breathRaw = mode.breath;
-        const expireRaw = mode.expire;
+        this.mode = this.mode ?? this.json[1];
+        const breath = this.mode.breath;
+        const expire = this.mode.expire;
+        this.brake = this.mode.brake;
+        const breathRaw = this.mode.breath;
+        const expireRaw = this.mode.expire;
+        const brakeRaw = this.mode.brake;
         const breathSound = new Howl({
             src: ['/breath.m4a'],
             sprite: {
@@ -187,12 +183,11 @@ export default class SceneGlobal extends Scene {
         };
 
         const progressBar = document.getElementById('progress-bar');
-        const progressText = document.getElementById('progress-text');
 
         const updateProgressText = (step, duration) => {
             const time = performance.now() - this.animationStartTime;
 
-            progressText.innerText = `${step} : ${Math.ceil(time / 1000)}s / ${duration}s`;
+            this.progressText.innerText = `${step} : ${Math.ceil(time / 1000)}s / ${duration}s`;
         };
 
         this.timeline
@@ -246,6 +241,22 @@ export default class SceneGlobal extends Scene {
                 },
                 '<',
             );
+        if (brakeRaw > 0) {
+            const pauseState = { elapsed: 0 };
+
+            this.timeline.to(pauseState, {
+                elapsed: brakeRaw,
+                duration: brakeRaw,
+                ease: 'none',
+                onStart: () => {
+                    this.animationStartTime = performance.now();
+                    updateProgressText('Pause', brakeRaw);
+                },
+                onUpdate: () => {
+                    updateProgressText('Pause', brakeRaw);
+                },
+            });
+        }
     }
 
     pointerupHandler(e) {

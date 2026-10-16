@@ -10,7 +10,7 @@ export default class WebGLApp {
         this.renderHeight = window.innerHeight;
 
         this.renderer = this.createRenderer();
-        this.debugger = this.createDebugger();
+        // this.debugger = this.createDebugger();
         this.sceneGlobal = this.createSceneGlobal(options);
         this.resize();
 

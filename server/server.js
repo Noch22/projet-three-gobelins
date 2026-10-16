@@ -85,8 +85,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('ANIMATION_COMPLETE', () => {
-        if (socket.data.isMobile) return;
-
         const roomCode = [...socket.rooms].find((room) => room !== socket.id);
         if (!roomCode || !rooms[roomCode]) return;
 

@@ -3,12 +3,35 @@
         "name": "Respiration cohérente",
         "breath": 5,
         "expire": 5,
-        "brake": 0
+        "brake": 0,
+        "color": "#e34f26"
     },
     {
         "name": "Respiration apaisante",
         "breath": 4,
         "expire": 6,
-        "brake": 0
+        "brake": 0,
+        "color": "#f7df1e"
+    },
+    {
+        "name": "Respiration carrée",
+        "breath": 4,
+        "expire": 4,
+        "brake": 4,
+        "color": "#3498db"
+    },
+    {
+        "name": "Respiration relaxante",
+        "breath": 4,
+        "expire": 8,
+        "brake": 0,
+        "color": "#9b59b6"
+    },
+    {
+        "name": "Respiration lente",
+        "breath": 6,
+        "expire": 6,
+        "brake": 0,
+        "color": "#2ecc71"
     }
 ]
