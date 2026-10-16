@@ -1,4 +1,4 @@
-import '@/style/app.scss';
+import '@/style/app.css';
 import WebglApp from '@/webgl';
 import { io } from 'socket.io-client';
 import QRCode from 'qrcode';
