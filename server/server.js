@@ -34,6 +34,7 @@ function generateRoomCode() {
 // Gestion des connexions WebSocket
 io.on('connection', (socket) => {
     socket.on('CONNECT', (isMobile) => {
+        socket.data.isMobile = isMobile;
         console.log(`[INFO] Le joueur ${socket.id} est ${isMobile ? 'sur mobile' : 'sur desktop'}`);
     });
 
@@ -81,5 +82,16 @@ io.on('connection', (socket) => {
         if (!roomCode) return;
 
         socket.to(roomCode).emit('START_ANIMATION');
+    });
+
+    socket.on('ANIMATION_COMPLETE', () => {
+        if (socket.data.isMobile) return;
+
+        const roomCode = [...socket.rooms].find((room) => room !== socket.id);
+        if (!roomCode || !rooms[roomCode]) return;
+
+        io.to(roomCode).emit('RESET_ROOM');
+        delete rooms[roomCode];
+        io.in(roomCode).socketsLeave(roomCode);
     });
 });

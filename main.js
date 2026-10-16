@@ -4,6 +4,8 @@ import { io } from 'socket.io-client';
 import QRCode from 'qrcode';
 import { Howl, Howler } from 'howler';
 import eruda from 'eruda';
+// import { hapticTrigger } from 'ios-haptics';
+import { WebHaptics, defaultPatterns } from 'web-haptics';
 
 if (new URLSearchParams(window.location.search).has('debug')) {
     eruda.init();
@@ -12,13 +14,17 @@ if (new URLSearchParams(window.location.search).has('debug')) {
 class App {
     constructor() {
         const uaDataMobile = navigator.userAgentData?.mobile;
-        this.isMobile =
-            typeof uaDataMobile === 'boolean' ? uaDataMobile : /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        this.isMobile = uaDataMobile === true || /Android|iPhone|iPad|iPod|CriOS/i.test(navigator.userAgent);
 
-        this.webglApp = new WebglApp({
-            isMobile: this.isMobile,
-            onButtonPressed: (buttonPressed) => this.handleButtonPressed(buttonPressed),
-        });
+        if (this.isMobile) document.body.classList.add('is-mobile');
+
+        if (!this.isMobile) {
+            this.webglApp = new WebglApp({
+                isMobile: this.isMobile,
+                onButtonPressed: (buttonPressed) => this.handleButtonPressed(buttonPressed),
+                onAnimationComplete: () => this.handleAnimationComplete(),
+            });
+        }
         this.socket = io();
         this.roomCode = null;
         this.currentRoom = null;
@@ -31,11 +37,11 @@ class App {
 
         this.setupModes();
         this.setupEventListeners();
-
-        if (this.isMobile) document.body.classList.add('is-mobile');
     }
 
     setupModes() {
+        if (!this.webglApp) return;
+
         this.webglApp.sceneGlobal.jsonPromise.then((modes) => {
             this.modes = modes;
             this.modeSelect.innerHTML = modes
@@ -56,6 +62,15 @@ class App {
             this.socket.emit('CREATE_ROOM');
         });
 
+        this.startButtonMobile.addEventListener('click', () => {
+            if (this.isMobile && this.currentRoom) {
+                this.socket.emit('BUTTON_PRESSED');
+            }
+
+            const haptics = new WebHaptics();
+            haptics.trigger([{ duration: 10000 }], { intensity: 1 });
+        });
+
         this.modeSelect.addEventListener('change', (event) => {
             this.selectMode(Number(event.target.value));
         });
@@ -69,9 +84,14 @@ class App {
             this.roomStatus.textContent = message;
             document.body.classList.add('is-experience-active', 'has-room');
             document.getElementById('mobile-screen').style.display = 'none';
+            this.isMobile && (document.getElementById('mobile-panel').style.display = 'flex');
         });
         this.socket.on('START_ANIMATION', () => {
-            this.webglApp.sceneGlobal.startAnimation();
+            const scene = this.webglApp?.sceneGlobal;
+            if (scene && !scene.timeline.isActive()) scene.startAnimation();
+        });
+        this.socket.on('RESET_ROOM', () => {
+            // window.location.replace(window.location.pathname);
         });
     }
 
@@ -88,6 +108,12 @@ class App {
 
         if (this.isMobile && buttonPressed && this.currentRoom) {
             this.socket.emit('BUTTON_PRESSED');
+        }
+    }
+
+    handleAnimationComplete() {
+        if (this.currentRoom) {
+            this.socket.emit('ANIMATION_COMPLETE');
         }
     }
 

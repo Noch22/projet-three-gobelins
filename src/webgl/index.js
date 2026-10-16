@@ -23,6 +23,7 @@ export default class WebGLApp {
             debugger: this.debugger,
             isMobile: options.isMobile,
             onButtonPressed: options.onButtonPressed,
+            onAnimationComplete: options.onAnimationComplete,
         });
 
         return scene;

@@ -4,8 +4,8 @@ import CameraManager from './CameraManager';
 import Sphere from './Sphere';
 import { backgroundFragmentShader, backgroundVertexShader } from './BackgroundShader';
 import { gsap } from 'gsap';
-import { triggerHaptic } from 'tactus';
 import { Howl, Howler } from 'howler';
+import { WebHaptics, defaultPatterns } from 'web-haptics';
 
 const GRID_SIZE = 21;
 
@@ -18,22 +18,21 @@ export default class SceneGlobal extends Scene {
         this.buttonPressed = false;
         this.isMobile = options.isMobile;
         this.onButtonPressed = options.onButtonPressed;
+        this.onAnimationComplete = options.onAnimationComplete;
 
         this.renderer = options.renderer;
         this.debugger = options.debugger;
         this.sphere = this.createSphere();
         this.raycaster = new Raycaster();
         this.mousePosition = new Vector2();
-        this.timeline = gsap.timeline({ repeat: 5, repeatDelay: 0 });
-        this.hapticInterval = null;
-        this.hapticTimeout = null;
-
-        console.log('[haptics]', {
-            ios: /iPad|iPhone|iPod/.test(navigator.userAgent),
-            secureContext: window.isSecureContext,
-            vibrate: typeof navigator.vibrate === 'function',
+        this.timeline = gsap.timeline({
+            repeat: 0,
+            repeatDelay: 0,
+            onComplete: () => {
+                console.log('Timeline has ended!');
+                this.onAnimationComplete?.();
+            },
         });
-
         this.debugFolder = this.createDebugFolder();
         this.cameraManager = this.createCameraManager();
         this.lightsManager = this.createLightsManager();
@@ -104,7 +103,7 @@ export default class SceneGlobal extends Scene {
         return mesh;
     }
 
-    raycast(triggerHaptic = false) {
+    raycast() {
         this.raycaster.setFromCamera(this.mousePosition, this.camera);
         const intersects = this.raycaster.intersectObject(this.sphere.hitMesh, false);
 
@@ -112,10 +111,6 @@ export default class SceneGlobal extends Scene {
         console.log('intersects', intersects);
         this.isPointerDown = true;
         console.log(this.isMobile, this.timeline.isActive());
-
-        if (triggerHaptic) {
-            triggerHaptic(40);
-        }
 
         if (!this.timeline.isActive() && this.isMobile) {
             this.startAnimation();
@@ -139,7 +134,6 @@ export default class SceneGlobal extends Scene {
     setupEventListeners() {
         window.addEventListener('pointerdown', this.pointerdownHandler.bind(this));
         window.addEventListener('pointerup', this.pointerupHandler.bind(this));
-        window.addEventListener('click', this.clickHandler.bind(this));
         window.addEventListener('mousemove', this.mousemoveHandler.bind(this));
         window.addEventListener('keydown', this.keydownHandler.bind(this));
     }
@@ -161,25 +155,6 @@ export default class SceneGlobal extends Scene {
 
     setMode(mode) {
         this.mode = mode;
-    }
-
-    stopHapticPhase() {
-        clearInterval(this.hapticInterval);
-        clearTimeout(this.hapticTimeout);
-        this.hapticInterval = null;
-        this.hapticTimeout = null;
-    }
-
-    startHapticPhase(duration) {
-        this.stopHapticPhase();
-
-        const triggerPulse = () => {
-            triggerHaptic(25);
-        };
-
-        triggerPulse();
-        this.hapticInterval = setInterval(triggerPulse, 900);
-        this.hapticTimeout = setTimeout(() => this.stopHapticPhase(), duration * 1000);
     }
 
     startAnimation() {
@@ -231,7 +206,6 @@ export default class SceneGlobal extends Scene {
                     updateProgressText('Inspiration', breathRaw);
                     this.animationStartTime = performance.now();
                     breathSound.play('customStart');
-                    this.startHapticPhase(breathRaw);
                 },
                 onUpdate: () => {
                     updateProgressText('Inspiration', breathRaw);
@@ -260,7 +234,6 @@ export default class SceneGlobal extends Scene {
                     animationState.elapsed = 0;
                     updateProgressText('Expiration', expireRaw);
                     this.animationStartTime = performance.now();
-                    this.startHapticPhase(expireRaw);
                     expireSound.play('customStart');
                 },
             })
@@ -297,13 +270,6 @@ export default class SceneGlobal extends Scene {
         };
 
         this.raycast();
-    }
-
-    clickHandler(e) {
-        if (e.target !== this.renderer.domElement) return;
-
-        this.updatePointerPosition(e);
-        this.raycast(true);
     }
 
     mousemoveHandler(e) {

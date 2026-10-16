@@ -73,13 +73,9 @@ body::after {
     display: block;
 }
 
-#container {
-    z-index: 1;
-    pointer-events: none;
-}
-
 #home-screen,
-#mobile-screen {
+#mobile-screen,
+#mobile-panel {
     position: fixed;
     inset: 0;
     z-index: 10;
@@ -232,6 +228,35 @@ body:not(.has-room) #qr-code:empty {
     background: var(--ink);
     box-shadow: 0 12px 22px rgba(32, 51, 47, 0.2);
     transform: translateY(-2px);
+}
+
+#mobile-panel {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    padding: 2rem 1.5rem;
+    justify-content: center;
+    align-content: center;
+    gap: 1rem;
+    min-width: 0;
+    border-left: 1px solid var(--line);
+    text-align: left;
+
+    button {
+        padding: 1rem 1.45rem;
+        border: 1px solid var(--sage-deep);
+        margin: 2rem 0 0;
+        border-radius: 3px;
+        color: var(--paper-bright);
+        background: var(--sage-deep);
+        box-shadow: 0 8px 18px rgba(85, 121, 109, 0.2);
+        font: inherit;
+        cursor: pointer;
+        transition:
+            background 180ms ease,
+            transform 180ms ease,
+            box-shadow 180ms ease;
+    }
 }
 
 #mobile-screen {

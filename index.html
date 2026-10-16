@@ -6,29 +6,33 @@
         <title>Relax - expérience interactive</title>
     </head>
     <body>
-        <div id="container">
-            <main id="home-screen">
-                <div>
-                    <section class="hero-copy">
-                        <h1>RELAX</h1>
-                        <p>Je vous sent au combien stressé(e)... Profitez d'un petit temps de relaxation 🧘</p>
-                        <button id="start-button">Commencer l'expérience</button>
-                    </section>
-                    <section id="room-panel" aria-live="polite">
-                        <span class="panel-label">Votre espace</span>
-                        <p id="room-status"></p>
-                        <select id="mode-select"></select>
-                        <canvas id="qr-code"></canvas>
-                    </section>
-                </div>
-            </main>
-        </div>
+        <main id="home-screen">
+            <div>
+                <section class="hero-copy">
+                    <h1>RELAX</h1>
+                    <p>Je vous sent au combien stressé(e)... Profitez d'un petit temps de relaxation 🧘</p>
+                    <button id="start-button">Commencer l'expérience</button>
+                </section>
+                <section id="room-panel" aria-live="polite">
+                    <span class="panel-label">Votre espace</span>
+                    <p id="room-status"></p>
+                    <select id="mode-select"></select>
+                    <canvas id="qr-code"></canvas>
+                </section>
+            </div>
+        </main>
         <main id="mobile-screen">
             <h1>RELAX</h1>
             <p>Prêt(e) à passer un moment de détente infini ?</p>
             <p>Pour profiter de l'expérience, veuillez utiliser un ordinateur.</p>
-            <button id="start-button-mobile">Commencer l'expérience</button>
         </main>
+        <section id="mobile-panel">
+            <p>
+                Cliquez sur le bouton ci-dessous pour commencer l'expérience. Profitez de la vibration pour vous
+                détendre. Regardez votre écran d'ordinateur pour profiter de l'expérience.
+            </p>
+            <button id="start-button-mobile">Commencer l'expérience</button>
+        </section>
         <div id="progress-bar"></div>
         <div id="progress-bar-bg"></div>
         <p id="progress-text"></p>
