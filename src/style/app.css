@@ -209,7 +209,7 @@ body.has-room #room-panel {
     margin-block: 8px;
 }
 
-#mode-select::picekr(select) {
+#mode-select::picker(select) {
     background: #fff;
     border: 1px solid #d1d5db;
     border-radius: 8px;
