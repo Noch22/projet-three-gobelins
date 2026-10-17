@@ -8,6 +8,9 @@ export default defineConfig({
     resolve: {
         alias: [{ find: '@', replacement: path.resolve(import.meta.dirname, './src') }],
     },
+    build: {
+        cssMinify: false,
+    },
     server: {
         https: true,
         host: true,
