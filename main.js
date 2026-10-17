@@ -3,12 +3,7 @@ import WebglApp from '@/webgl';
 import { io } from 'socket.io-client';
 import QRCode from 'qrcode';
 import { Howl } from 'howler';
-import eruda from 'eruda';
 import { WebHaptics } from 'web-haptics';
-
-if (new URLSearchParams(window.location.search).has('debug')) {
-    eruda.init();
-}
 
 class App {
     constructor() {
