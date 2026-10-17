@@ -112,12 +112,9 @@ class App {
         if (!mode) return;
 
         this.webglApp.sceneGlobal.setMode(mode);
-        console.log('Mode changed:', mode);
     }
 
     handleButtonPressed(buttonPressed) {
-        console.log('Button pressed:', buttonPressed);
-
         if (this.isMobile && buttonPressed && this.currentRoom) {
             this.socket.emit('BUTTON_PRESSED');
         }

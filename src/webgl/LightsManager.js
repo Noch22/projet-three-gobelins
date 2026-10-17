@@ -79,8 +79,6 @@ export default class LightsManager {
 
         const lightsFolder = this.debugger.addFolder({ title: 'Lights' });
 
-        console.log(this.directional.controls);
-
         lightsFolder.addBinding(this.ambient, 'color', { label: 'Ambient Color' });
         lightsFolder.addBinding(this.ambient, 'intensity', { label: 'Ambient Intensity' });
         lightsFolder.addBinding(this.directional, 'color', { label: 'Directional Color' });

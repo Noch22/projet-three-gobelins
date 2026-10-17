@@ -19,9 +19,7 @@ app.use((req, res) => {
 });
 
 const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+server.listen(PORT);
 
 // Stockage des rooms et état initial du jeu
 const rooms = {};
@@ -35,7 +33,6 @@ function generateRoomCode() {
 io.on('connection', (socket) => {
     socket.on('CONNECT', (isMobile) => {
         socket.data.isMobile = isMobile;
-        console.log(`[INFO] Le joueur ${socket.id} est ${isMobile ? 'sur mobile' : 'sur desktop'}`);
     });
 
     // Création d'une room

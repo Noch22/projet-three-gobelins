@@ -29,7 +29,6 @@ export default class SceneGlobal extends Scene {
         this.timeline = gsap.timeline({
             repeat: 2,
             onComplete: () => {
-                console.log('Timeline has ended!');
                 this.onAnimationComplete?.();
                 this.progressText.innerText = '';
             },
@@ -108,9 +107,7 @@ export default class SceneGlobal extends Scene {
         const intersects = this.raycaster.intersectObject(this.sphere.hitMesh, false);
 
         if (intersects.length === 0) return;
-        console.log('intersects', intersects);
         this.isPointerDown = true;
-        console.log(this.isMobile, this.timeline.isActive());
 
         if (!this.timeline.isActive() && this.isMobile) {
             this.startAnimation();
@@ -153,7 +150,6 @@ export default class SceneGlobal extends Scene {
     startAnimation() {
         this.animationStartTime = performance.now();
         if (!this.json) return;
-        console.log('Starting animation with mode:', this.mode);
 
         this.mode = this.mode ?? this.json[1];
         const breath = this.mode.breath;
@@ -259,7 +255,6 @@ export default class SceneGlobal extends Scene {
     }
 
     pointerupHandler(e) {
-        console.log('pointerup', e);
         this.isPointerDown = false;
         this.buttonPressed = false;
         this.onButtonPressed?.(this.buttonPressed);
@@ -269,10 +264,8 @@ export default class SceneGlobal extends Scene {
     }
 
     pointerdownHandler(e) {
-        console.log('pointerdown', e);
         // this.isPointerDown = true;
         this.pointerDownTime = performance.now();
-        console.log('pointerDownTime', this.pointerDownTime);
 
         this.pointerStartPosition = {
             x: e.clientX,

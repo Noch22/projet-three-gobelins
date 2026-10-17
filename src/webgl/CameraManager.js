@@ -63,8 +63,6 @@ export default class CameraManager {
      * Debug
      */
     createDebugFolder() {
-        console.log(this.debugger);
-
         if (!this.debugger) return;
 
         const cameraChangedHandler = () => {
