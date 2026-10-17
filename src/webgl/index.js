@@ -1,6 +1,5 @@
 import { WebGLRenderer } from 'three';
 import SceneGlobal from './SceneGlobal.js';
-import { Pane } from 'tweakpane';
 
 const deltaTime = 1;
 
@@ -69,15 +68,5 @@ export default class WebGLApp {
         this.sceneGlobal.update(deltaTime);
         this.update();
         this.render();
-    }
-
-    /**
-     * Debug
-     */
-
-    createDebugger() {
-        const pane = new Pane({ title: 'WebGL App' });
-
-        return pane;
     }
 }

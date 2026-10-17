@@ -2,9 +2,9 @@ import '@/style/app.css';
 import WebglApp from '@/webgl';
 import { io } from 'socket.io-client';
 import QRCode from 'qrcode';
-import { Howl, Howler } from 'howler';
+import { Howl } from 'howler';
 import eruda from 'eruda';
-import { WebHaptics, defaultPatterns } from 'web-haptics';
+import { WebHaptics } from 'web-haptics';
 
 if (new URLSearchParams(window.location.search).has('debug')) {
     eruda.init();
@@ -62,7 +62,7 @@ class App {
 
     setupEventListeners() {
         this.startButton.addEventListener('click', () => {
-            var sound = new Howl({
+            new Howl({
                 src: ['/music.mp3'],
                 autoplay: true,
                 loop: true,

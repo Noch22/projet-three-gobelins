@@ -1,12 +1,4 @@
-import {
-    Object3D,
-    SphereGeometry,
-    MeshBasicMaterial,
-    MeshStandardMaterial,
-    Mesh,
-    MeshPhongMaterial,
-    MeshNormalMaterial,
-} from 'three';
+import { Object3D, SphereGeometry, MeshBasicMaterial, Mesh, MeshPhongMaterial } from 'three';
 
 export default class Sphere extends Object3D {
     constructor(options = {}) {

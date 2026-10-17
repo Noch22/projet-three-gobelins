@@ -4,8 +4,7 @@ import CameraManager from './CameraManager';
 import Sphere from './Sphere';
 import { backgroundFragmentShader, backgroundVertexShader } from './BackgroundShader';
 import { gsap } from 'gsap';
-import { Howl, Howler } from 'howler';
-import { WebHaptics, defaultPatterns } from 'web-haptics';
+import { Howl } from 'howler';
 
 const GRID_SIZE = 21;
 

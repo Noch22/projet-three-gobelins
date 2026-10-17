@@ -3,20 +3,19 @@
 ## Stack
 
 - [Three.js](https://threejs.org/)
-- [Tweakpane](https://tweakpane.github.io/docs/) for debug controls
 - [Vite](https://vite.dev/) for the dev server
 
 ## Getting started
 
 ```bash
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
 ## Build
 
 ```bash
-pnpm build
+npm run build
 ```
 
 ## Coding Style
